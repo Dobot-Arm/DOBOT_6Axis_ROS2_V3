@@ -1,0 +1,16 @@
+float64 x1
+float64 y1
+float64 z1
+float64 rx1
+float64 ry1
+float64 rz1
+float64 x2
+float64 y2
+float64 z2
+float64 rx2
+float64 ry2
+float64 rz2
+string[] param_value
+---
+
+int32 res
