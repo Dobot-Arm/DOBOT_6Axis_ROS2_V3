@@ -94,7 +94,7 @@ source ~/.bashrc
 ## rviz display
 
 ```
-ros2 launch dobot_rviz display.launch
+ros2 launch dobot_rviz dobot_rviz.launch.py
 ```
 
 You can access the joint_state_publisher_gui for each angle, and see the effect on the rviz page.
@@ -118,7 +118,7 @@ ros2 launch dobot_moveit dobot_moveit.launch.py
 * Start gazebo with the following command
 
 ```
-ros2 launch dobot_gazebo load_urdf_into_gazebo.launch.py 
+ros2 launch dobot_gazebo dobot_gazebo.launch.py 
 ```
 ![gazebo](/image/gazebo.jpg)
 
@@ -127,7 +127,7 @@ ros2 launch dobot_gazebo load_urdf_into_gazebo.launch.py
 * **Use the following command to connect to the robot**
 
   ```
-  ros2 launch cr_robot_ros2 dobot_bringup_ros2.launch.py
+  ros2 launch dobot_bringup_v3 dobot_bringup_ros2.launch.py
   ```
 
 * **View services**
