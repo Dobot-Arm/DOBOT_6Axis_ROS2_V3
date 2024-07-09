@@ -127,7 +127,7 @@ ros2 launch dobot_gazebo dobot_gazebo.launch.py
 * **使用如下命令连接机械臂**
 
   ```
-  ros2 launch cr_robot_ros2 dobot_bringup_ros2.launch.py
+  ros2 launch dobot_bringup_v3 dobot_bringup_ros2.launch.py
   ```
 
 * **使用如下命令查看服务**
