@@ -120,7 +120,7 @@ class PublisherNode(Node):
         try:
            self.get_logger().info("connection:30004")
            self.feed_v = fankuis(self.IP,30004)
-           self.get_logger().info("connection succeeded:30003")
+           self.get_logger().info("connection succeeded:30004")
         except:
             self.get_logger().info("Connection failed!!!")
     def timer_callback(self):                                     # 创建定时器周期执行的回调函数
@@ -130,7 +130,9 @@ class PublisherNode(Node):
            msg.x = actual[0]                              # 填充消息对象中的消息数据
            msg.y = actual[1]
            msg.z = actual[2]
-           msg.r =actual[3]
+           msg.rx = actual[3]
+           msg.ry = actual[4]
+           msg.rz =actual[5]
            self.pub.publish(msg)                                     # 发布话题消息
         
 def main(args=None):                                 # ROS2节点主入口main函数
