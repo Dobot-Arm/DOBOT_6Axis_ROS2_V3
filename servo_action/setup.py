@@ -22,6 +22,9 @@ setup(
         'console_scripts': [
         'action_move_server    = servo_action.action_move_server:main',
         'action_move_client    = servo_action.action_move_client:main',
+        'action_move_server_reality    = servo_action.action_move_server_reality:main',
+        'action_move_client_reality    = servo_action.action_move_client_reality:main',
+        'Joint_Position    = servo_action.Joint_Position:main',
         ],
     },
 )
