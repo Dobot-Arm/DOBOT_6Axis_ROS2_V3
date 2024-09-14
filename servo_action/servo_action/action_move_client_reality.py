@@ -5,8 +5,8 @@
 import rclpy                                  
 from rclpy.node   import Node                  
 from sensor_msgs.msg import JointState   
-from rclpy.action import ActionClient             # ROS2 动作服务器类            
-from control_msgs.action import FollowJointTrajectory  # 自定义的圆周运动接口
+from rclpy.action import ActionClient                     
+from control_msgs.action import FollowJointTrajectory  
 import trajectory_msgs
 import os
 """
