@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import rclpy                                     # ROS2 Python接口库
-from rclpy.node import Node                      # ROS2 节点类
-from dobot_msgs_v3.msg import ToolVectorActual                  # 字符串消息类型
+from rclpy.node import Node                      
+from dobot_msgs_v3.msg import ToolVectorActual                  
+from sensor_msgs.msg import JointState  
 import socket
 import numpy as np
 import os
@@ -98,7 +99,8 @@ class fankuis():
             a = np.frombuffer(data, dtype=MyType)
             if hex((a['test_value'][0])) == '0x123456789abcdef':
                 tool_v = a['tool_vector_actual'][0]
-            return tool_v
+                tool_j = a['q_target'][0]
+            return [tool_v,tool_j]
         except:
             return ["NG"]
             print("反馈接收解析失败")
@@ -109,12 +111,13 @@ class fankuis():
 class PublisherNode(Node):
     
     def __init__(self, name):
-        super().__init__(name)                                    # ROS2节点父类初始化
+        super().__init__(name)                                    
         # self.declare_parameter('IP', '192.168.9.1')  # 默认值     
         # self.IP = self.get_parameter('IP').get_parameter_value().string_value  
         self.IP = str(os.getenv("IP_address"))
         self.connect()
         self.pub = self.create_publisher(ToolVectorActual, "dobot_msgs_v3/msg/ToolVectorActual", 10)   # 创建发布者对象（消息类型、话题名、队列长度）
+        self.pub2 = self.create_publisher(JointState, "joint_states_robot", 10) 
         self.timer = self.create_timer(0.01, self.timer_callback)  # 创建一个定时器（单位为秒的周期，定时执行的回调函数）
     def connect(self):
         try:
@@ -123,17 +126,26 @@ class PublisherNode(Node):
            self.get_logger().info("connection succeeded:30004")
         except:
             self.get_logger().info("Connection failed!!!")
-    def timer_callback(self):                                     # 创建定时器周期执行的回调函数
-        msg = ToolVectorActual()                                            # 创建一个String类型的消息对象
+    def timer_callback(self):                                     
+        msg = ToolVectorActual()                                           
         actual = self.feed_v.feed()
-        if actual[0]!= "NG" :
-           msg.x = actual[0]                              # 填充消息对象中的消息数据
-           msg.y = actual[1]
-           msg.z = actual[2]
-           msg.rx = actual[3]
-           msg.ry = actual[4]
-           msg.rz =actual[5]
+        msg2 = JointState()
+        if actual[0]!= "NG" :                                     
+           msg2.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
+           q_target = actual[1]
+           joint_a = []
+           for ii in q_target:
+               joint_a.append(float(ii*3.14159/180))
+           print(joint_a)
+           msg2.position = joint_a     
+           msg.x = actual[0][0]                             
+           msg.y = actual[0][1]
+           msg.z = actual[0][2]
+           msg.rx = actual[0][3]
+           msg.ry = actual[0][4]
+           msg.rz =actual[0][5]
            self.pub.publish(msg)                                     # 发布话题消息
+           self.pub2.publish(msg2) 
         
 def main(args=None):                                 # ROS2节点主入口main函数
     rclpy.init(args=args)                            # ROS2 Python接口初始化
