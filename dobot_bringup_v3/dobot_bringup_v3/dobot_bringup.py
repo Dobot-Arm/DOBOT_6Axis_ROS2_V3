@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-@作者: 古月居(www.guyuehome.com)
-@说明: ROS2服务示例-提供加法器的服务器处理功能
-"""
-
 import rclpy                                     # ROS2 Python接口库
-from rclpy.node import Node                    # ROS2 节点类
-from dobot_msgs_v3.srv import *   # 自定义的服务接口
+from rclpy.node import Node                 
+from dobot_msgs_v3.srv import *  
 from .dobot_api import *
 import os
 class adderServer(Node):
@@ -18,7 +13,6 @@ class adderServer(Node):
         # self.IP = self.get_parameter('IP').get_parameter_value().string_value  
         self.IP = str(os.getenv("IP_address"))
         self.get_logger().info(self.IP)                                                  # ROS2节点父类初始化
-        # 创建服务器对象（接口类型、服务名、服务器回调函数）
         # self.srv = self.create_service(AO, '/dobot_bringup_v3/srv/AO', self.AO)
         self.srv = self.create_service(AccJ,'/dobot_bringup_v3/srv/AccJ',self.AccJ)
         self.srv = self.create_service(AccL,'/dobot_bringup_v3/srv/AccL',self.AccL)
@@ -420,7 +414,7 @@ class adderServer(Node):
 
 def main(args=None):                                 # ROS2节点主入口main函数
     rclpy.init(args=args)                            # ROS2 Python接口初始化
-    node = adderServer("dobot_bringup_v3")       # 创建ROS2节点对象并进行初始化
-    rclpy.spin(node)                                 # 循环等待ROS2退出
+    node = adderServer("dobot_bringup_v3")      
+    rclpy.spin(node)                                
     node.destroy_node()                              # 销毁节点对象
     rclpy.shutdown()                                 # 关闭ROS2 Python接口
