@@ -3,11 +3,12 @@
 
 import rclpy                                     # ROS2 Python接口库
 from rclpy.node import Node                      
-from dobot_msgs_v3.msg import ToolVectorActual                  
+from dobot_msgs_v3.msg import ToolVectorActual
 from sensor_msgs.msg import JointState  
 import socket
 import numpy as np
 import os
+import time
 MyType = np.dtype([('len',np.int64,), ('digital_input_bits',np.uint64,), ('digital_output_bits',
     np.uint64,), ('robot_mode',np.uint64,), ('time_stamp',np.uint64,), ( 'time_stamp_reserve_bit', np.uint64,),
     ('test_value',np.uint64,), ('test_value_keep_bit', np.float64,), ('speed_scaling',np.float64,), ('linear_momentum_norm',np.float64,),
@@ -95,15 +96,13 @@ class fankuis():
             self.socket_feedback.setblocking(True)  # 需要先设置为非阻塞, 使用select超时机制清空
             self.all = self.socket_feedback.recv(10240)
             data = self.all[0:1440]
-            # print(data)
             a = np.frombuffer(data, dtype=MyType)
             if hex((a['test_value'][0])) == '0x123456789abcdef':
                 tool_v = a['tool_vector_actual'][0]
                 tool_j = a['q_actual'][0]
             return [tool_v,tool_j]
         except:
-            return ["NG"]
-            print("反馈接收解析失败")
+            return ["NG1"]
 
 """
 创建一个发布者节点
@@ -112,13 +111,13 @@ class PublisherNode(Node):
     
     def __init__(self, name):
         super().__init__(name)                                    
-        # self.declare_parameter('IP', '192.168.9.1')  # 默认值     
-        # self.IP = self.get_parameter('IP').get_parameter_value().string_value  
+        # self.declare_parameter('IP', '192.168.5.1')  # 默认值
+        # self.IP = self.get_parameter('IP').get_parameter_value().string_value
         self.IP = str(os.getenv("IP_address"))
         self.connect()
-        self.pub = self.create_publisher(ToolVectorActual, "dobot_msgs_v3/msg/ToolVectorActual", 10)   # 创建发布者对象（消息类型、话题名、队列长度）
-        self.pub2 = self.create_publisher(JointState, "joint_states_robot", 10) 
-        self.timer = self.create_timer(0.01, self.timer_callback)  # 创建一个定时器（单位为秒的周期，定时执行的回调函数）
+        self.pub = self.create_publisher(ToolVectorActual, "dobot_msgs_v3/msg/ToolVectorActual", 10)
+        self.pub2 = self.create_publisher(JointState, "joint_states_robot", 10)
+        self.timer = self.create_timer(0.01, self.timer_callback)
     def connect(self):
         try:
            self.get_logger().info("connection:30004")
@@ -130,8 +129,11 @@ class PublisherNode(Node):
         msg = ToolVectorActual()                                           
         actual = self.feed_v.feed()
         msg2 = JointState()
-        if actual[0]!= "NG" :                                     
+        #self.get_logger().info(str(actual))
+        if len(actual)!= 1 :                                     
            msg2.name = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
+           msg2.header.stamp = self.get_clock().now().to_msg()
+           msg2.header.frame_id = 'joint_states'
            q_target = actual[1]
            joint_a = []
            for ii in q_target:
@@ -144,12 +146,12 @@ class PublisherNode(Node):
            msg.rx = actual[0][3]
            msg.ry = actual[0][4]
            msg.rz =actual[0][5]
-           self.pub.publish(msg)                                     # 发布话题消息
+           self.pub.publish(msg)
            self.pub2.publish(msg2) 
         
-def main(args=None):                                 # ROS2节点主入口main函数
-    rclpy.init(args=args)                            # ROS2 Python接口初始化
-    node = PublisherNode("topic_helloworld_pub")     # 创建ROS2节点对象并进行初始化
-    rclpy.spin(node)                                 # 循环等待ROS2退出
-    node.destroy_node()                              # 销毁节点对象
-    rclpy.shutdown()                                 # 关闭ROS2 Python接口
+def main(args=None):
+    rclpy.init(args=args)
+    node = PublisherNode("dobot_feedback")
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
