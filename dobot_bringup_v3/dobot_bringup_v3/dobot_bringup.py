@@ -295,7 +295,8 @@ class adderServer(Node):
     def DI(self, request, response):                                       
         return_t = self.dashboard.ToolDO(request.index)
         return_tt = return_t[:return_t.find("{")-1]
-        response.res = int(return_tt)                                           
+        response.res = int(return_tt)
+        response.value = return_t[return_t.find("{")+1:return_t.find("}")]                                           
         self.get_logger().info(return_t)                                     
         return response 
     
@@ -316,7 +317,8 @@ class adderServer(Node):
     def ToolDI(self, request, response):                                       
         return_t = self.dashboard.ToolDI(request.index)
         return_tt = return_t[:return_t.find("{")-1]
-        response.res = int(return_tt)                                           
+        response.res = int(return_tt)
+        response.value = return_t[return_t.find("{")+1:return_t.find("}")]                                           
         self.get_logger().info(return_t)                                     
         return response 
 
