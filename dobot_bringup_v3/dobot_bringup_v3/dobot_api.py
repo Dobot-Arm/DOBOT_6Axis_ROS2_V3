@@ -314,7 +314,7 @@ class DobotApiDashboard(DobotApi):
         return self.sendRecvMsg(string)        
 
     def ToolDI(self,offset1):
-        string = "DI({:d}".format(offset1)+")"
+        string = "ToolDI({:d}".format(offset1)+")"
         return self.sendRecvMsg(string)   
 
     def DOGroup(self,*dynParams):
