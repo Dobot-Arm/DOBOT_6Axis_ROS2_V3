@@ -57,6 +57,8 @@ class adderServer(Node):
         self.srv = self.create_service(SpeedL,'/dobot_bringup_v3/srv/SpeedL',self.SpeedL)
         self.srv = self.create_service(StartDrag,'/dobot_bringup_v3/srv/StartDrag',self.StartDrag)
         self.srv = self.create_service(StopDrag,'/dobot_bringup_v3/srv/StopDrag',self.StopDrag)
+        self.srv = self.create_service(StartTrace,'/dobot_bringup_v3/srv/StartTrace',self.StartTrace)
+        self.srv = self.create_service(StartPath,'/dobot_bringup_v3/srv/StartPath',self.StartPath)
         self.srv = self.create_service(StopScript,'/dobot_bringup_v3/srv/StopScript',self.StopScript)
         self.srv = self.create_service(Tool,'/dobot_bringup_v3/srv/Tool',self.Tool)
         self.srv = self.create_service(ToolDI,'/dobot_bringup_v3/srv/ToolDI',self.ToolDI)
@@ -509,6 +511,28 @@ class adderServer(Node):
         return_tt = return_t[:return_t.find("{")-1]
         response.res = int(return_tt)
         self.get_logger().info(return_t)
+        return response
+
+    def StartTrace(self, request, response):
+        try:
+            return_t = self.move.StartTrace(request.trace_name)
+            return_tt = return_t[:return_t.find("{")-1]
+            response.res = int(return_tt)
+            self.get_logger().info(return_t)
+        except ValueError as e:
+            response.res = -1
+            self.get_logger().error("StartTrace parameter error: %s" % str(e))
+        return response
+
+    def StartPath(self, request, response):
+        try:
+            return_t = self.move.StartPath(request.trace_name, request.const_val, request.cart)
+            return_tt = return_t[:return_t.find("{")-1]
+            response.res = int(return_tt)
+            self.get_logger().info(return_t)
+        except ValueError as e:
+            response.res = -1
+            self.get_logger().error("StartPath parameter error: %s" % str(e))
         return response
 
     def StopScript(self, request, response):

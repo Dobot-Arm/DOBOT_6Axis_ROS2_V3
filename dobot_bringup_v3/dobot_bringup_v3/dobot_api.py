@@ -585,3 +585,42 @@ class DobotApiMove(DobotApi):
     def SyncAll(self):
         string = "SyncAll()"
         return self.sendRecvMsg(string)
+
+    def StartTrace(self, traceName):
+        """
+        Track fitting motion: Fit a motion path using the recorded points (at least 4 points) from the specified trajectory file,
+        then the robot moves along that path.
+        Before calling this command, use other motion commands to move the robot to the first point of the trajectory.
+        
+        Track file location: /dobot/userdata/project/process/trajectory/
+        
+        traceName: Trajectory file name (including suffix), must not be empty
+        """
+        if not traceName or not traceName.strip():
+            raise ValueError("traceName must not be empty")
+        string = "StartTrace({:s})".format(traceName)
+        return self.sendRecvMsg(string)
+
+    def StartPath(self, traceName, const_val, cart):
+        """
+        Track playback motion: Reproduce the recorded motion trajectory based on the specified trajectory file (at least 4 points).
+        Before calling this command, use other motion commands to move the robot to the first point of the trajectory.
+        
+        Track file location: /dobot/userdata/project/process/trajectory/
+        
+        traceName: Trajectory file name (including suffix), must not be empty
+        const_val: Whether to playback at constant speed.
+                   1 - Constant speed playback (removes pauses in the trajectory)
+                   0 - Playback at original speed
+        cart: Playback path type.
+              1 - Cartesian path playback
+              0 - Joint path playback
+        """
+        if not traceName or not traceName.strip():
+            raise ValueError("traceName must not be empty")
+        if const_val not in (0, 1):
+            raise ValueError("const_val must be 0 or 1")
+        if cart not in (0, 1):
+            raise ValueError("cart must be 0 or 1")
+        string = "StartPath({:s},{:d},{:d})".format(traceName, const_val, cart)
+        return self.sendRecvMsg(string)
