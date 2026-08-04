@@ -1,0 +1,28 @@
+# Build artifacts
+/build/
+/install/
+/log/
+/log_*/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# colcon / ament / cmake
+COLCON_IGNORE
+colcon_core/
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+
+# IDE
+.vscode/
+.idea/
+
+# General
+*.swp
+*.tmp
